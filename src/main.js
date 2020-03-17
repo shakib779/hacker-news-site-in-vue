@@ -5,6 +5,10 @@ import { router } from './router/index'
 
 Vue.config.productionTip = false
 
+/**
+ * Params (timeInUnix): Unix Format time
+ * Calculate the time difference between current time and given time
+ */
 Vue.filter('getTimeDiffrence', (timeInUnix) => {
   let diff = Math.round((Date.now() / 1000)) - timeInUnix;
   const day = 24 * 60 * 60;
