@@ -7,6 +7,8 @@ import VueAxios from 'vue-axios'
 Vue.use(Vuex);
 Vue.use(VueAxios, axios);
 
+const url = require('./../static/url').url;
+
 export const store = new Vuex.Store({
     state: {
         startIndex: 0,
@@ -90,7 +92,7 @@ export const store = new Vuex.Store({
         getPostListRange: (context) => {
             for (let i = context.state.startIndex; i < context.state.startIndex + 5; i++) {
                 Vue.axios
-                    .get("https://hacker-news.firebaseio.com/v0/item/" + context.state.itemIds[i].toString() + ".json")
+                    .get(url.getItemById + context.state.itemIds[i].toString() + ".json")
                     .then(response => {
                         context.commit('getPostList', response.data);
                     });

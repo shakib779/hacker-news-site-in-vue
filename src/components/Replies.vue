@@ -18,6 +18,8 @@
 </template>
 
 <script>
+const url = require('./../static/url').url;
+
 export default {
   name: "Replies",
 
@@ -44,7 +46,7 @@ export default {
         for (const itemId of this.reply.kids) {
           promises.push(
             this.$http.get(
-              "https://hacker-news.firebaseio.com/v0/item/" +
+              url.getItemById +
                 itemId.toString() +
                 ".json"
             )

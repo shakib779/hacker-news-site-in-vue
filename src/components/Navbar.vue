@@ -8,6 +8,9 @@
 </template>
 
 <script>
+
+const url = require('./../static/url').url;
+
 export default {
   name: "Navbar",
 
@@ -17,6 +20,9 @@ export default {
   
   methods: {
     
+    /**
+     * Fetch top stroies on 'Top' button click
+     */
     fetchTopStories() {
       this.$store.commit("resetStartIndex");
       this.$store.commit("resetCurrentPageForPostList");
@@ -24,10 +30,13 @@ export default {
         this.$router.push("/");
       }
       this.fetchPostList(
-        "https://hacker-news.firebaseio.com/v0/topstories.json"
+        url.getTopStoryListUrl
       );
     },
 
+    /**
+     * Fetch new stroies on 'New' button click
+     */
     fetchNewStories() {
       this.$store.commit("resetStartIndex");
       this.$store.commit("resetCurrentPageForPostList");
@@ -35,10 +44,13 @@ export default {
         this.$router.push("/");
       }
       this.fetchPostList(
-        "https://hacker-news.firebaseio.com/v0/newstories.json"
+        url.getNewStoryListUrl
       );
     },
 
+    /**
+     * Fetch the all post ids from API call
+     */
     fetchPostList(url) {
       this.$store.dispatch("getPostList", {
         startIndex: this.startIndex,
@@ -47,6 +59,9 @@ export default {
     }
   },
 
+  /**
+   * Initial function of the component 
+   */
   created() {
     this.fetchTopStories();
   }

@@ -1,16 +1,19 @@
 <template>
   <div>
+    <!-- Post information -->
     <h1>
       {{post.title}}
       <small>({{post.url}})</small>
     </h1>
     <h6>{{post.descendants}} points | by {{post.by}} {{post.time | getTimeDiffrence }} ago</h6>
 
+    <!-- Comment section  -->
     <h4 v-if="post.kids">{{post.kids.length}} comments</h4>
     <br />
     <div v-for="(item, id) in commentsArray" :key="id">
       <div v-if="!item.deleted">
         <hr v-if="id != 0" style="margin-left: 20px" />
+        <!-- Reply section -->
         <Replies v-bind:reply="item" />
       </div>
     </div>
@@ -20,6 +23,7 @@
 
 <script>
 import Replies from "./Replies";
+const url = require('./../static/url').url;
 
 export default {
   name: "Comments",
@@ -34,11 +38,15 @@ export default {
 
   methods: {
     
+    /**
+     * Params: post id from url
+     * Fetch the post info by the id
+     */
     getPostInfo(id) {
       
       this.$http
         .get(
-          "https://hacker-news.firebaseio.com/v0/item/" +
+          url.getItemById +
             id.toString() +
             ".json"
         )
@@ -49,7 +57,7 @@ export default {
             for (const itemId of this.post.kids) {
               promises.push(
                 this.$http.get(
-                  "https://hacker-news.firebaseio.com/v0/item/" +
+                  url.getItemById +
                     itemId.toString() +
                     ".json"
                 )
@@ -70,6 +78,9 @@ export default {
     }
   },
 
+  /**
+   * Initial function of the component 
+   */
   created() {
     if (this.$route.params.postId) {
       this.getPostInfo(this.$route.params.postId);
