@@ -1,30 +1,33 @@
 <template>
-  <div :style="indent">
-    {{reply.by}} {{reply.time | getTimeDiffrence }} ago
-    <br />
-    {{reply.text}}
-    <div v-if="reply.kids && reply.kids.length> 0" style="overflow:hidden; white-space:nowrap">
-      [-]
-      <hr style="display:inline-block; width:100%; vertical-align: middle" />
-    </div>
-    <!-- <div v-if="!reply.kids"><hr style='display:inline-block; width:100%; vertical-align: middle' /></div> -->
+  <div>
     <div v-for="(item, id) in replies" :key="id">
       <div v-if="!item.deleted">
-        <hr v-if="id != 0" style="margin-left: 20px" />
-        <Replies v-bind:reply="item" />
+        <br />
+        <div style="overflow:hidden; white-space:nowrap">
+          [-]
+          <hr style="display:inline-block; width:100%; vertical-align: middle" />
+        </div>
+        <div class="margin-for-reply">
+          {{item.by}} {{item.time | getTimeDiffrence }} ago
+          <br />
+          <span v-html="item.text"></span>
+          <Replies v-bind:replyIds="item.kids" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const url = require('./../static/url').url;
+
+const itemGetter = require('./../mixins/mixin').itemGetter;
 
 export default {
   name: "Replies",
+  mixins: [itemGetter],
 
   props: {
-    reply: Object
+    replyIds: Array
   },
 
   data() {
@@ -32,32 +35,20 @@ export default {
       replies: []
     };
   },
-
-  computed: {
-    indent() {
-      return { transform: `translate(${20}px)` };
-    }
-  },
-
+  
   methods: {
     getReplies() {
       const promises = [];
-      if (this.reply.kids) {
-        for (const itemId of this.reply.kids) {
-          promises.push(
-            this.$http.get(
-              url.getItemById +
-                itemId.toString() +
-                ".json"
-            )
-          );
+      if (this.replyIds) {
+        for (const itemId of this.replyIds) {
+          promises.push(this.getItemById(itemId));
         }
       }
 
       Promise.all(promises)
         .then(res => {
           res.forEach(item => {
-            this.replies.push(item.data);
+            this.replies.push(item);
           });
         })
         .catch(err => {
@@ -74,4 +65,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.margin-for-reply {
+  margin-left: 20px;
+}
+
 </style>

@@ -1,73 +1,31 @@
 <template>
   <div>
     <nav>
-      <button v-on:click="fetchTopStories()">Top</button>
-      <button v-on:click="fetchNewStories()">New</button>
+      <router-link style="margin-left: 10px" to="/top">Top</router-link>
+      <router-link style="margin-left: 10px" to="/new">New</router-link>
     </nav>
   </div>
 </template>
 
 <script>
 
-const url = require('./../static/url').url;
-
 export default {
   name: "Navbar",
 
   data() {
-    return {};
-  },
-  
-  methods: {
-    
-    /**
-     * Fetch top stroies on 'Top' button click
-     */
-    fetchTopStories() {
-      this.$store.commit("resetStartIndex");
-      this.$store.commit("resetCurrentPageForPostList");
-      if (this.$router.currentRoute.name !== "Hello") {
-        this.$router.push("/");
-      }
-      this.fetchPostList(
-        url.getTopStoryListUrl
-      );
-    },
-
-    /**
-     * Fetch new stroies on 'New' button click
-     */
-    fetchNewStories() {
-      this.$store.commit("resetStartIndex");
-      this.$store.commit("resetCurrentPageForPostList");
-      if (this.$router.currentRoute.name !== "Hello") {
-        this.$router.push("/");
-      }
-      this.fetchPostList(
-        url.getNewStoryListUrl
-      );
-    },
-
-    /**
-     * Fetch the all post ids from API call
-     */
-    fetchPostList(url) {
-      this.$store.dispatch("getPostList", {
-        startIndex: this.startIndex,
-        url: url
-      });
-    }
-  },
-
-  /**
-   * Initial function of the component 
-   */
-  created() {
-    this.fetchTopStories();
+    return {
+    };
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+nav {
+  background: #fd6601;
+  padding: 20px 30px;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
 </style>

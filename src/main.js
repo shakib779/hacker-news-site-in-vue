@@ -15,7 +15,7 @@ Vue.filter('getTimeDiffrence', (timeInUnix) => {
   const hour = 60 * 60;
   const minutes = 60;
   let string = "";
-  
+
   if (diff >= day) {
     diff = Math.round(diff / day);
     string = " day";
@@ -28,8 +28,9 @@ Vue.filter('getTimeDiffrence', (timeInUnix) => {
   } else {
     string = " second";
   }
-  
-  if (diff > 1) string += "s";
+
+  if (diff > 1)
+    string += "s";
   return diff.toString() + string;
 
 });

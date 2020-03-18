@@ -3,8 +3,8 @@
     <div v-for="(item, idx) in posts" :key="idx">
       <hr />
       <h5>
-        <span style="color: #FF0000">{{item.descendants}}</span>
-        {{item.title}}
+        <span style="color: #FF0000">{{item.descendants}} </span>
+        <span v-html="item.title"></span>
         <small>({{item.url}})</small>
       </h5>
       <h5>
@@ -15,73 +15,56 @@
         >{{item.kids? item.kids.length : 0}} comments</a>
       </h5>
     </div>
-    <div style="text-align: center">{{currentPage}}/{{itemIdLength}}</div>
-    <div v-if="startIndex !== 0" style="text-align: center">
-      <a href="#" v-on:click="gotoPreviousPage(); $event.preventDefault();">Previous</a>
-    </div>
-    <div style="text-align: center">
-      <a href="#" v-on:click="gotoNextPage(); $event.preventDefault();">Next</a>
-    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 
 export default {
   name: "PostList",
+  props: {
+    startIndex: Number  
+  },
 
   data() {
-    return {};
+    return {
+      posts: []
+    };
+  },
+
+  watch: {
+    startIndex: function () {
+      this.fetchPostList();
+    }
   },
   
   methods: {
-   
-    fetchPostListFromNextPage() {
-      this.$store.commit("setPostListEmpty");
-      this.$store.dispatch("getPostListRange", {
-        startIndex: this.startIndex,
-        lastIndex: this.startIndex + 5
-      });
-    },
-
-    fetchPostListFromPreviousPage() {
-      this.$store.commit("setPostListEmpty");
-      this.$store.dispatch("getPostListRange", {
-        startIndex: this.startIndex,
-        lastIndex: this.startIndex + 5
-      });
-    },
-
     gotoComments(id) {
       this.$router.push("comments/" + id.toString());
     },
 
-    gotoPreviousPage() {
-      this.$store.commit("updateCurrentPage", -1);
-      this.$store.commit("updateStartIndex", -5);
-      this.fetchPostListFromPreviousPage();
+    fetchPostList() {
+      this.$store
+        .dispatch("getPostListRange", {
+          startIndex: this.startIndex,
+          lastIndex: this.startIndex + 5
+        })
+        .then(res => {
+          this.posts = res;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
-
-    gotoNextPage() {
-      this.$store.commit("updateStartIndex", 5);
-      this.$store.commit("updateCurrentPage", 1);
-      this.fetchPostListFromNextPage();
-    }
   },
 
-  computed: {
-    ...mapGetters([
-      "posts",
-      "itemIds",
-      "itemIdLength",
-      "startIndex",
-      "currentPage"
-    ])
+  created() {
+    this.fetchPostList();
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 </style>

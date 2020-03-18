@@ -3,19 +3,15 @@
     <!-- Post information -->
     <h1>
       {{post.title}}
+      <span v-html="post.title"></span>
       <small>({{post.url}})</small>
     </h1>
-    <h6>{{post.descendants}} points | by {{post.by}} {{post.time | getTimeDiffrence }} ago</h6>
+    <h5>{{post.descendants}} points | by {{post.by}} {{post.time | getTimeDiffrence }} ago</h5>
 
     <!-- Comment section  -->
     <h4 v-if="post.kids">{{post.kids.length}} comments</h4>
-    <br />
-    <div v-for="(item, id) in commentsArray" :key="id">
-      <div v-if="!item.deleted">
-        <hr v-if="id != 0" style="margin-left: 20px" />
-        <!-- Reply section -->
-        <Replies v-bind:reply="item" />
-      </div>
+    <div v-if="post.kids">
+      <Replies v-bind:replyIds="post.kids"/>
     </div>
     <br />
   </div>
@@ -23,16 +19,15 @@
 
 <script>
 import Replies from "./Replies";
-const url = require('./../static/url').url;
+const itemGetter = require('./../mixins/mixin').itemGetter;
 
 export default {
   name: "Comments",
   components: { Replies },
-
+  mixins: [itemGetter],
   data() {
     return {
-      post: {},
-      commentsArray: []
+      post: {}
     };
   },
 
@@ -43,37 +38,12 @@ export default {
      * Fetch the post info by the id
      */
     getPostInfo(id) {
-      
-      this.$http
-        .get(
-          url.getItemById +
-            id.toString() +
-            ".json"
-        )
+      this.getItemById(id)
         .then(res => {
-          const promises = [];
-          this.post = res.data;
-          if (this.post.kids) {
-            for (const itemId of this.post.kids) {
-              promises.push(
-                this.$http.get(
-                  url.getItemById +
-                    itemId.toString() +
-                    ".json"
-                )
-              );
-            }
-          }
-
-          Promise.all(promises)
-            .then(res => {
-              res.forEach(item => {
-                this.commentsArray.push(item.data);
-              });
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          this.post = res;
+        })
+        .catch(err => {
+          console.log(err);
         });
     }
   },
