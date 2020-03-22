@@ -11,7 +11,7 @@
         by {{item.by}} {{item.time | getTimeDiffrence }} ago |
         <a
           href="#"
-          v-on:click="gotoComments(item.id); $event.preventDefault();"
+          @click.prevent="gotoComments(item.id)"
         >{{item.kids? item.kids.length : 0}} comments</a>
       </h5>
     </div>
